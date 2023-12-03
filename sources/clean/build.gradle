@@ -1,12 +1,44 @@
 plugins {
     id 'java'
+    id 'net.minecraftforge.gradle.patcher'
 }
+
+evaluationDependsOn(":sources:mcp")
 
 group = 'lol.koblizek'
 version = '0.0.1'
 
 repositories {
     mavenCentral()
+}
+
+patcher {
+    parent = project(':sources:mcp')
+    mcVersion = MC_VERSION
+    patchedSrc = file('src/main/java')
+
+    mappings channel: MAPPING_CHANNEL, version: MAPPING_VERSION
+    processor = POST_PROCESSOR
+
+    runs {
+        CleanGameClient {
+            taskName 'cleanGameClient'
+            main 'net.minecraft.client.main.Main'
+            workingDirectory file('run')
+            args '--gameDir', '.'
+            args '--version', MC_VERSION
+            args '--assetsDir', downloadAssets.output
+            args '--assetIndex', '{asset_index}'
+            args '--accessToken', '0'
+        }
+
+        CleanGameServer {
+            taskName 'cleanGameServer'
+
+            main 'net.minecraft.server.MinecraftServer'
+            workingDirectory file('run')
+        }
+    }
 }
 
 dependencies {

@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'net.minecraftforge.gradle.patcher'
 }
 
 group = 'lol.koblizek'
@@ -10,9 +11,60 @@ repositories {
 }
 
 dependencies {
+    implementation 'net.minecraftforge:mergetool:0.2.3.3:forge'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+}
+
+patcher {
+    // exc = file("$rootDir/src/main/resources/forge.exc")
+    parent = project(':sources:clean')
+    patches = file("$rootDir/patches/minecraft")
+    patchedSrc = file('src/main/java')
+    srgPatches = true
+    notchObf = true
+    // accessTransformer = file("$rootDir/src/main/resources/forge_at.cfg")
+    //sideAnnotationStripper = file("$rootDir/src/main/resources/forge.sas")
+    processor = POST_PROCESSOR
+}
+
+applyPatches {
+    canonicalizeAccess true
+    canonicalizeWhitespace true
+    maxFuzz 3
+    originalPrefix = '../src-base/minecraft/'
+    modifiedPrefix = '../src-work/minecraft/'
+}
+
+genPatches {
+    originalPrefix = '../src-base/minecraft/'
+    modifiedPrefix = '../src-work/minecraft/'
+}
+
+task setup() {
+    group 'legacyloader'
+    dependsOn ':sources:clean:extractMapped'
+    dependsOn ':sources:minecraft:extractMapped' //These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
+}
+
+task runClient(type: JavaExec) {
+    group 'legacyloader'
+    main 'net.minecraft.client.main.Main'
+    args '--gameDir', '.'
+    args '--version', MC_VERSION
+    args '--assetsDir', downloadAssets.output
+    args '--assetIndex', '{asset_index}'
+    args '--accessToken', '0'
+    jvmArgs '-Djava.library.path=../build/natives/'
+    workingDir file('run')
+}
+
+task runServer(type: JavaExec) {
+    group 'legacyloader'
+    main 'net.minecraft.server.MinecraftServer'
+    jvmArgs '-Djava.library.path', '../build/'
+    workingDir file('run')
 }
 
 test {

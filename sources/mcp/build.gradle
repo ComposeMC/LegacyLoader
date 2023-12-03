@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'net.minecraftforge.gradle.mcp'
 }
 
 group = 'lol.koblizek'
@@ -7,6 +8,11 @@ version = '0.0.1'
 
 repositories {
     mavenCentral()
+}
+
+mcp {
+    config = MC_VERSION + '-' + MCP_VERSION
+    pipeline = 'joined'
 }
 
 dependencies {
