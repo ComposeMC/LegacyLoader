@@ -44,6 +44,8 @@ genPatches {
 
 task setup() {
     group 'legacyloader'
+    dependsOn ':sources:minecraft:downloadAssets'
+    dependsOn ':sources:minecraft:extractNatives'
     dependsOn ':sources:clean:extractMapped'
     dependsOn ':sources:minecraft:extractMapped' //These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
 }
@@ -54,15 +56,17 @@ task runClient(type: JavaExec) {
     args '--gameDir', '.'
     args '--version', MC_VERSION
     args '--assetsDir', downloadAssets.output
-    args '--assetIndex', '{asset_index}'
+    args '--assetIndex', '1.12'
     args '--accessToken', '0'
     jvmArgs '-Djava.library.path=../build/natives/'
+    classpath sourceSets.main.runtimeClasspath
     workingDir file('run')
 }
 
 task runServer(type: JavaExec) {
     group 'legacyloader'
     main 'net.minecraft.server.MinecraftServer'
+    classpath sourceSets.main.runtimeClasspath
     jvmArgs '-Djava.library.path', '../build/'
     workingDir file('run')
 }
