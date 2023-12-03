@@ -43,3 +43,4 @@ bin/
 !/sources/clean/src/main/java/.gitkeep
 /sources/minecraft/src/main/java/*
 !/sources/minecraft/src/main/java/.gitkeep
+run/
