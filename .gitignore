@@ -37,3 +37,9 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Minecraft ###
+/sources/clean/src/main/java/*
+!/sources/clean/src/main/java/.gitkeep
+/sources/minecraft/src/main/java/*
+!/sources/minecraft/src/main/java/.gitkeep

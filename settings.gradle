@@ -1,2 +1,8 @@
 rootProject.name = 'LegacyLoader'
+include 'sources:minecraft'
+findProject(':sources:minecraft')?.name = 'minecraft'
+include 'sources:clean'
+findProject(':sources:clean')?.name = 'clean'
+include 'sources:mcp'
+findProject(':sources:mcp')?.name = 'mcp'
 
